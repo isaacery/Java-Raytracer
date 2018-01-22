@@ -5,4 +5,12 @@ public class Ray {
         this.origin = origin;
         this.direction = dir;
     }
+
+    public Vector3 getDirection() {
+        return direction;
+    }
+
+    public Vector3 getOrigin() {
+        return origin;
+    }
 }

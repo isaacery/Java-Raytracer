@@ -34,7 +34,7 @@ public class Vector3 {
     }
 
     public static Vector3 ZERO = new Vector3(0,0,0);
-    // FORWARD is defined as a direction vector paralel to the x axis
+    // FORWARD is defined as a direction vector paralel to the z axis
     public static Vector3 FORWARD = new Vector3(1,0,0);
 
     public static double dot(Vector3 a, Vector3 b) {
@@ -45,11 +45,17 @@ public class Vector3 {
         return Math.sqrt(dot(a,a));
     }
 
+    // Returns vector between a and b.
+    public static Vector3 between(Vector3 a, Vector3 b) {
+        return new Vector3 (b.getX()-a.getX(), b.getY()-a.getY(), b.getZ()-a.getZ());
+    }
+
     // Multiplies each component by some scalar k
     public static Vector3 scale(Vector3 a, double k) {
         return new Vector3(a.getX() * k, a.getY() * k, a.getZ() * k);
     }
 
+    //TODO: Should this be static?
     public static Vector3 normalize(Vector3 a) {
         return scale(a, 1/magnitude(a));
     }

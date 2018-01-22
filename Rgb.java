@@ -23,4 +23,10 @@ public class Rgb { //
         rgb = (rgb << 8) + (int) (b*255);
         return rgb;
     }
+
+    public static Rgb RED = new Rgb(1,0,0);
+    public static Rgb GREEN = new Rgb(0,1,0);
+    public static Rgb BLUE = new Rgb(0,0,1);
+    public static Rgb BLACK = new Rgb(0,0,0);
+    public static Rgb WHITE = new Rgb(1,1,1);
 }
