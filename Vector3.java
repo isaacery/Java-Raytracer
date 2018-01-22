@@ -51,7 +51,7 @@ public class Vector3 {
     }
 
     public static Vector3 normalize(Vector3 a) {
-        return scale(a, magnitude(a));
+        return scale(a, 1/magnitude(a));
     }
 
     public static double angle(Vector3 a, Vector3 b) {
