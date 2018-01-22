@@ -1,16 +1,17 @@
 import java.io.*;
+import java.awt.image.*;
+import javax.imageio.ImageIO;
+
+// writeToFile outputs image contained in raster to .PNG file
 
 public class Image {
-    private String fileType = "P3";
     private int width;
     private int height;
-    private int maxVal;
     private Rgb[][] raster = new Rgb[height][width];
 
-    public Image(int w, int h, int m, Rgb[][] r) {
+    public Image(int w, int h, Rgb[][] r) {
         width = w;
         height = h;
-        maxVal = m;
         raster = r;
     }
 
@@ -22,30 +23,17 @@ public class Image {
         return raster[h][w];
     }
 
-    public void writeToFile() throws IOException{
+    public void writeToFile(String fileName) throws IOException{
         System.out.println("Finished Generation, now writing to file.");
-        BufferedWriter fileOut = new BufferedWriter(new FileWriter("image.ppm"));
-        fileOut.write(fileType + "\n");
-        fileOut.write(width + " " + height + "\n");
-        fileOut.write(maxVal + "\n");
-        for (Rgb[] row : raster) {
-            for (Rgb rgb : row) {
-                fileOut.write(rgb.toString() + "\t");
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                image.setRGB(i,j,raster[j][i].toInt());
             }
         }
-        fileOut.close();
+        ImageIO.write(image, "png", new File(fileName + ".png"));
     }
 
     public static void main(String[] args) throws IOException{
-        int width = 200;
-        int height = 100;
-        Rgb[][] raster = new Rgb[height][width];
-        for (int x=0; x<height; x++) {
-            for (int y=0; y<width; y++) {
-                //raster[x][y] = new Rgb ((float) y / 255,0,(float) x / 255); // Try using interpolation
-            }
-        }
-        Image testImage = new Image(width, height, 255, raster);
-        testImage.writeToFile();
     }
 }
