@@ -4,11 +4,12 @@ public class Scene {
     private Camera camera;
     private Sphere[] shapes;
     private Rgb backgroundColour;
-    //private LightSource[] lights; TODO
+    private LightSource light; //TODO Multiple
 
     public Scene(Sphere[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
+        this.light = new LightSource(new Vector3(0,0,0));
         backgroundColour = Rgb.BLUE;
     }
 
@@ -22,7 +23,7 @@ public class Scene {
             for (int w = 0; w < width; w++) {
                 double w_d = 1 - (w_unit * w);
                 Vector3 pos = new Vector3(w_d, h_d, 1);
-                Vector3 dir = Vector3.between(Vector3.ZERO, pos);
+                Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
                 //System.out.println("pos: " + pos.toString());
                 //System.out.println("dir: " + dir.toString());
                 Ray ray = new Ray(Vector3.ZERO, dir);
@@ -30,8 +31,14 @@ public class Scene {
                 if (i == null) {
                     raster[h][w] = backgroundColour;
                 } else {
-                    System.out.println("a");
-                    raster[h][w] = i.getObject().getColour();
+                    Sphere obj = i.getObject();
+                    Vector3 intersectPoint =
+                        Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
+                    Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
+                    double brightness = light.brightness(intersectPoint, normal);
+                    System.out.println("b: " + brightness);
+                    //raster[h][w] = obj.getColour();
+                    raster[h][w] = new Rgb(brightness, brightness, brightness);
                 }
             }
         }
@@ -42,7 +49,6 @@ public class Scene {
         LinkedList<Intersection> intersections = new LinkedList<>();
         for (Sphere s: shapes) {
             if (s.getIntersection(ray) != null) {
-                System.out.println("a");
                 intersections.add(s.getIntersection(ray));
             }
         }
@@ -68,8 +74,9 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        Sphere sp = new Sphere(Vector3.scale(Vector3.FORWARD, 2.0), 1.0, Rgb.RED);
-        Sphere[] spheres = {sp};
+        Sphere s1 = new Sphere(new Vector3(0,0,2), 1.0, Rgb.RED);
+        Sphere s2 = new Sphere(new Vector3(-1.5,0.5,2), 0.5, Rgb.GREEN);
+        Sphere[] spheres = {s1,s2};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
         i.writeToFile("test1");

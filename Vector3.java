@@ -45,23 +45,29 @@ public class Vector3 {
         return Math.sqrt(dot(a,a));
     }
 
-    // Returns vector between a and b.
-    public static Vector3 between(Vector3 a, Vector3 b) {
-        return new Vector3 (b.getX()-a.getX(), b.getY()-a.getY(), b.getZ()-a.getZ());
+    public static Vector3 add(Vector3 a, Vector3 b) {
+        return new Vector3(a.getX()+b.getX(), a.getY()+b.getY(), a.getZ()+b.getZ());
+    }
+
+    // Returns vector from a to b
+    public static Vector3 fromTo(Vector3 a, Vector3 b) {
+        return add(b, scale(a,-1));
+        //return new Vector3 (b.getX()-a.getX(), b.getY()-a.getY(), b.getZ()-a.getZ());
+    }
+
+    // Returns acute angle between a and b in radians
+    public static double angle(Vector3 a, Vector3 b) {
+        return Math.acos(dot(a,b) / (magnitude(a) * magnitude(b)));
     }
 
     // Multiplies each component by some scalar k
     public static Vector3 scale(Vector3 a, double k) {
-        return new Vector3(a.getX() * k, a.getY() * k, a.getZ() * k);
+        return new Vector3(a.getX()*k, a.getY()*k, a.getZ()*k);
     }
 
     //TODO: Should this be static?
     public static Vector3 normalize(Vector3 a) {
         return scale(a, 1/magnitude(a));
-    }
-
-    public static double angle(Vector3 a, Vector3 b) {
-        return 0; //TODO
     }
 
 }

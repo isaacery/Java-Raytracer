@@ -1,6 +1,7 @@
 public class Object {
     protected Vector3 position;
     protected boolean visible; //TODO decide if I need this.
+    
     public Object(Vector3 pos) {
         this.position = pos;
         this.visible = true;

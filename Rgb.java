@@ -1,14 +1,20 @@
 public class Rgb { //
     /*  Values range from 0 to 1, with 1 indicating
         the strongest intensity of each color       */
-    private float r;
-    private float g;
-    private float b;
+    private double r;
+    private double g;
+    private double b;
 
-    public Rgb(float r, float g, float b) {
+    public Rgb(double r, double g, double b) {
         this.r = r;
         this.g = g;
         this.b = b;
+    }
+
+    public Rgb(Vector3 rgb) {
+        this.r = rgb.getX();
+        this.g = rgb.getY();
+        this.b = rgb.getZ();
     }
 
     public String toString() {
@@ -22,6 +28,11 @@ public class Rgb { //
         rgb = (rgb << 8) + (int) (g*255);
         rgb = (rgb << 8) + (int) (b*255);
         return rgb;
+    }
+
+    /*  Converts RGB value to vector  */
+    public Vector3 toVector() {
+        return new Vector3(r,g,b);
     }
 
     public static Rgb RED = new Rgb(1,0,0);
