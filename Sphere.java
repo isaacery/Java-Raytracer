@@ -23,9 +23,10 @@ public class Sphere extends Object{
         double t1 = ((-1 * b) + Math.sqrt(Math.pow(b,2) - 4*a*c)) / (2 * a);
         double t2 = ((-1 * b) - Math.sqrt(Math.pow(b,2) - 4*a*c)) / (2 * a);
         //TODO: figure out what to do with t2
-        if (Double.isNaN(t1)) {
+
+        if (Double.isNaN(t2)) {
             return null;
         }
-        return new Intersection(t1, this);
+        return new Intersection(t2, this);
     }
 }

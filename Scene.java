@@ -1,5 +1,6 @@
 import java.util.*;
 import java.io.*;
+//TODO: Lowering a lightsource raises the light in the scene???
 public class Scene {
     private Camera camera;
     private Sphere[] shapes;
@@ -9,7 +10,7 @@ public class Scene {
     public Scene(Sphere[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
-        this.light = new LightSource(new Vector3(0,0,0));
+        this.light = new LightSource(new Vector3(-2,0,3));
         backgroundColour = Rgb.BLUE;
     }
 
@@ -19,9 +20,10 @@ public class Scene {
         double w_unit = 2 / ((double) width);
         double h_unit = 2 / ((double) height);
         for (int h = 0; h < height; h++) {
-            double h_d = 1 - (h_unit * h);
+            double h_d = 1 - (h_unit * (h+1));
+            System.out.println("h: " + h_d);
             for (int w = 0; w < width; w++) {
-                double w_d = 1 - (w_unit * w);
+                double w_d = 1 - (w_unit * (w+1));
                 Vector3 pos = new Vector3(w_d, h_d, 1);
                 Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
                 //System.out.println("pos: " + pos.toString());
@@ -36,7 +38,7 @@ public class Scene {
                         Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
                     Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
                     double brightness = light.brightness(intersectPoint, normal);
-                    System.out.println("b: " + brightness);
+                    //System.out.println("b: " + brightness);
                     //raster[h][w] = obj.getColour();
                     raster[h][w] = new Rgb(brightness, brightness, brightness);
                 }
@@ -74,11 +76,11 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        Sphere s1 = new Sphere(new Vector3(0,0,2), 1.0, Rgb.RED);
-        Sphere s2 = new Sphere(new Vector3(-1.5,0.5,2), 0.5, Rgb.GREEN);
-        Sphere[] spheres = {s1,s2};
+        Sphere s1 = new Sphere(new Vector3(0,1,3), 1.0, Rgb.RED);
+        //Sphere s2 = new Sphere(new Vector3(-1.5,0,3), 1.0, Rgb.GREEN);
+        Sphere[] spheres = {s1};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
-        i.writeToFile("test1");
+        i.writeToFile("test2");
     }
 }
