@@ -17,6 +17,10 @@ public class Rgb { //
         this.b = rgb.getZ();
     }
 
+    public Rgb scaleBrightness(double x) {
+        return new Rgb(r * x, g * x, b * x);
+    }
+
     public String toString() {
         return (int) (r*255) + " " + (int) (g*255) + " " + (int) (b*255);
     }

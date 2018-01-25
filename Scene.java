@@ -11,7 +11,7 @@ public class Scene {
         this.camera = new Camera();
         this.shapes = shapes;
         this.light = new LightSource(new Vector3(-2,0,3));
-        backgroundColour = Rgb.BLUE;
+        backgroundColour = Rgb.BLACK;
     }
 
     //Currently assumes standard camera direction.
@@ -23,7 +23,7 @@ public class Scene {
             double h_d = 1 - (h_unit * (h+1));
             System.out.println("h: " + h_d);
             for (int w = 0; w < width; w++) {
-                double w_d = 1 - (w_unit * (w+1));
+                double w_d = (w_unit * (w+1)) -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
                 Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
                 //System.out.println("pos: " + pos.toString());
@@ -34,13 +34,14 @@ public class Scene {
                     raster[h][w] = backgroundColour;
                 } else {
                     Sphere obj = i.getObject();
+                    //System.out.println(obj.getColour().toString());
                     Vector3 intersectPoint =
                         Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
                     Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
                     double brightness = light.brightness(intersectPoint, normal);
                     //System.out.println("b: " + brightness);
                     //raster[h][w] = obj.getColour();
-                    raster[h][w] = new Rgb(brightness, brightness, brightness);
+                    raster[h][w] = obj.getColour().scaleBrightness(brightness);
                 }
             }
         }
@@ -76,9 +77,9 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        Sphere s1 = new Sphere(new Vector3(0,1,3), 1.0, Rgb.RED);
-        //Sphere s2 = new Sphere(new Vector3(-1.5,0,3), 1.0, Rgb.GREEN);
-        Sphere[] spheres = {s1};
+        Sphere s1 = new Sphere(new Vector3(0,0,3), 1.0, Rgb.RED);
+        Sphere s2 = new Sphere(new Vector3(2,0,4), 1.0, Rgb.GREEN);
+        Sphere[] spheres = {s1, s2};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
         i.writeToFile("test2");
