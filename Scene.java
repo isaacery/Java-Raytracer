@@ -10,7 +10,7 @@ public class Scene {
     public Scene(Sphere[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
-        this.light = new LightSource(new Vector3(-2,0,3));
+        this.light = new LightSource(new Vector3(-2,0,0));
         backgroundColour = Rgb.BLACK;
     }
 
@@ -25,27 +25,25 @@ public class Scene {
             for (int w = 0; w < width; w++) {
                 double w_d = (w_unit * (w+1)) -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
-                Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
-                //System.out.println("pos: " + pos.toString());
-                //System.out.println("dir: " + dir.toString());
-                Ray ray = new Ray(Vector3.ZERO, dir);
-                Intersection i = getNearestIntersection(ray);
-                if (i == null) {
-                    raster[h][w] = backgroundColour;
-                } else {
-                    Sphere obj = i.getObject();
-                    //System.out.println(obj.getColour().toString());
-                    Vector3 intersectPoint =
-                        Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
-                    Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
-                    double brightness = light.brightness(intersectPoint, normal);
-                    //System.out.println("b: " + brightness);
-                    //raster[h][w] = obj.getColour();
-                    raster[h][w] = obj.getColour().scaleBrightness(brightness);
-                }
+                raster[h][w] = shadePoint(pos);
             }
         }
         return raster;
+    }
+
+    public Rgb shadePoint(Vector3 pos) {
+        Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
+        Ray ray = new Ray(Vector3.ZERO, dir);
+        Intersection i = getNearestIntersection(ray);
+        if (i == null) {
+            return backgroundColour;
+        }
+        Sphere obj = i.getObject();
+        Vector3 intersectPoint =
+            Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
+        Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
+        double brightness = light.brightness(intersectPoint, normal); //TODO Multiple lights
+        return obj.getColour().scaleBrightness(brightness);
     }
 
     private Intersection getNearestIntersection(Ray ray) {
@@ -77,11 +75,12 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        Sphere s1 = new Sphere(new Vector3(0,0,3), 1.0, Rgb.RED);
-        Sphere s2 = new Sphere(new Vector3(2,0,4), 1.0, Rgb.GREEN);
-        Sphere[] spheres = {s1, s2};
+        Sphere s1 = new Sphere(new Vector3(0,0,3), 1.0, new Rgb(163,22,33));
+        Sphere s2 = new Sphere(new Vector3(-1.5,0,4), 1.0, new Rgb(102,207,192));
+        Sphere s3 = new Sphere(new Vector3(1,0,2), 0.3, new Rgb(78,128,152));
+        Sphere[] spheres = {s1, s2, s3};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
-        i.writeToFile("test2");
+        i.writeToFile("test3");
     }
 }

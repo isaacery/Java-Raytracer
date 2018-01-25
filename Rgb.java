@@ -11,6 +11,12 @@ public class Rgb { //
         this.b = b;
     }
 
+    public Rgb(int r, int g, int b) {
+        this.r = (double) r / 255;
+        this.g = (double) g / 255;
+        this.b = (double) b / 255;
+    }
+
     public Rgb(Vector3 rgb) {
         this.r = rgb.getX();
         this.g = rgb.getY();
@@ -39,9 +45,9 @@ public class Rgb { //
         return new Vector3(r,g,b);
     }
 
-    public static Rgb RED = new Rgb(1,0,0);
-    public static Rgb GREEN = new Rgb(0,1,0);
-    public static Rgb BLUE = new Rgb(0,0,1);
-    public static Rgb BLACK = new Rgb(0,0,0);
-    public static Rgb WHITE = new Rgb(1,1,1);
+    public static Rgb RED = new Rgb(1.0,0.0,0.0);
+    public static Rgb GREEN = new Rgb(0.0,1.0,0.0);
+    public static Rgb BLUE = new Rgb(0.0,0.0,1.0);
+    public static Rgb BLACK = new Rgb(0.0,0.0,0.0);
+    public static Rgb WHITE = new Rgb(1.0,1.0,1.0);
 }
