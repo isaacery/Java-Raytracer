@@ -10,7 +10,7 @@ public class Scene {
     public Scene(Sphere[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
-        this.light = new LightSource(new Vector3(-2,0,0));
+        this.light = new LightSource(new Vector3(-0.5,-3,-2));
         backgroundColour = Rgb.BLACK;
     }
 
@@ -21,7 +21,6 @@ public class Scene {
         double h_unit = 2 / ((double) height);
         for (int h = 0; h < height; h++) {
             double h_d = 1 - (h_unit * (h+1));
-            System.out.println("h: " + h_d);
             for (int w = 0; w < width; w++) {
                 double w_d = (w_unit * (w+1)) -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
@@ -34,7 +33,7 @@ public class Scene {
     public Rgb shadePoint(Vector3 pos) {
         Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
         Ray ray = new Ray(Vector3.ZERO, dir);
-        Intersection i = getNearestIntersection(ray);
+        Intersection i = minIntersection(getIntersections(ray));
         if (i == null) {
             return backgroundColour;
         }
@@ -42,18 +41,29 @@ public class Scene {
         Vector3 intersectPoint =
             Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
         Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
-        double brightness = light.brightness(intersectPoint, normal); //TODO Multiple lights
-        return obj.getColour().scaleBrightness(brightness);
+        double b_light = light.brightness(intersectPoint, normal); //TODO Multiple lights
+
+        Ray shadowRay = new Ray(intersectPoint, light.getPosition());
+        boolean shadow = false;
+        for (Intersection i2: getIntersections(shadowRay)) {
+            if (i2 != null) {
+                if (i2.getT() >= 0.000000001) { //TODO built-in epsilon?
+                    b_light = 0;
+                }
+            }
+        }
+
+        return obj.getColour().scaleBrightness(b_light);
     }
 
-    private Intersection getNearestIntersection(Ray ray) {
+    private LinkedList<Intersection> getIntersections(Ray ray) {
         LinkedList<Intersection> intersections = new LinkedList<>();
         for (Sphere s: shapes) {
             if (s.getIntersection(ray) != null) {
                 intersections.add(s.getIntersection(ray));
             }
         }
-        return minIntersection(intersections);
+        return intersections;
     }
 
     private Intersection minIntersection(LinkedList<Intersection> intersections) {
@@ -76,8 +86,8 @@ public class Scene {
 
     public static void main (String[] args) throws IOException {
         Sphere s1 = new Sphere(new Vector3(0,0,3), 1.0, new Rgb(163,22,33));
-        Sphere s2 = new Sphere(new Vector3(-1.5,0,4), 1.0, new Rgb(102,207,192));
-        Sphere s3 = new Sphere(new Vector3(1,0,2), 0.3, new Rgb(78,128,152));
+        Sphere s2 = new Sphere(new Vector3(-0.5,0.75,1.75), 0.6, new Rgb(102,207,192));
+        Sphere s3 = new Sphere(new Vector3(0,0,2), 0.3, new Rgb(78,128,152));
         Sphere[] spheres = {s1, s2, s3};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));

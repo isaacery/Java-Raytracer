@@ -14,4 +14,11 @@ public class LightSource extends Object {
         //TODO: How can I avoid using tanh?
         return Math.tanh(b);
     }
+    /*
+    public double shadow(Intersection[] i) {
+        Vector3 dir = Vector3.fromTo(this.position, pos);
+        Ray ray = new Ray(this.position, dir);
+
+    }
+    */
 }
