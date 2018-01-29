@@ -1,6 +1,6 @@
 import java.util.*;
 import java.io.*;
-//TODO: Lowering a lightsource raises the light in the scene???
+//TODO: Lowering a lightsource raises the light in the scene??? FIXED (I think)
 public class Scene {
     private Camera camera;
     private Sphere[] shapes;

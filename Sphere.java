@@ -1,10 +1,9 @@
-public class Sphere extends Object{
+public class Sphere extends Shape{
     private double radius;
     private Rgb colour;
     public Sphere(Vector3 pos, double r, Rgb c) {
-        super(pos);
+        super(pos, c);
         radius = r;
-        colour = c;
     }
 
     public Rgb getColour() {
