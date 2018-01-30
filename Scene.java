@@ -10,8 +10,12 @@ public class Scene {
     public Scene(Sphere[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
-        this.light = new LightSource(new Vector3(-0.5,-3,-2));
+        this.light = new LightSource(new Vector3(-3,1,-2));
         backgroundColour = Rgb.BLACK;
+    }
+
+    public Sphere[] getShapes() {
+        return shapes;
     }
 
     //Currently assumes standard camera direction.
@@ -24,46 +28,46 @@ public class Scene {
             for (int w = 0; w < width; w++) {
                 double w_d = (w_unit * (w+1)) -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
-                raster[h][w] = shadePoint(pos);
+                raster[h][w] = colourPoint(pos);
             }
         }
         return raster;
     }
 
-    public Rgb shadePoint(Vector3 pos) {
-        Vector3 dir = Vector3.fromTo(Vector3.ZERO, pos);
-        Ray ray = new Ray(Vector3.ZERO, dir);
-        Intersection i = minIntersection(getIntersections(ray));
-        if (i == null) {
+    public Rgb colourPoint(Vector3 pos) {
+        Vector3 dir = Vector3.fromTo(camera.getPosition(), pos);
+        Intersection closest = closestToCamera(dir);
+        if (closest == null) {
             return backgroundColour;
         }
-        Sphere obj = i.getObject();
+        Sphere obj = closest.getObject();
         Vector3 intersectPoint =
-            Vector3.add(ray.getOrigin(), Vector3.scale(ray.getDirection(),i.getT()));
+            Vector3.add(camera.getPosition(), Vector3.scale(dir,closest.getT()));
         Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
         double b_light = light.brightness(intersectPoint, normal); //TODO Multiple lights
+        double b_shadow = calculateShadow(intersectPoint, normal);
+        return obj.getColour().scaleBrightness(b_light * b_shadow);
+    }
 
+    private double calculateShadow(Vector3 intersectPoint, Vector3 normal) {
         Ray shadowRay = new Ray(intersectPoint, light.getPosition());
-        boolean shadow = false;
-        for (Intersection i2: getIntersections(shadowRay)) {
+        double brightness = 1;
+        for (Intersection i2: shadowRay.getIntersections(this)) {
             if (i2 != null) {
-                if (i2.getT() >= 0.000000001) { //TODO built-in epsilon?
-                    b_light = 0;
+                double t = i2.getT();
+                if (t >= 0.000000001) { //TODO built-in epsilon?
+                    brightness *= Math.min(1,10*t/light.getBrightness());
                 }
             }
         }
-
-        return obj.getColour().scaleBrightness(b_light);
+        return brightness;
     }
 
-    private LinkedList<Intersection> getIntersections(Ray ray) {
-        LinkedList<Intersection> intersections = new LinkedList<>();
-        for (Sphere s: shapes) {
-            if (s.getIntersection(ray) != null) {
-                intersections.add(s.getIntersection(ray));
-            }
-        }
-        return intersections;
+    /*  Returns an intersection closest to the
+        camera beyond the pixel in direction dir.    */
+    private Intersection closestToCamera(Vector3 dir) {
+        Ray ray = new Ray(camera.getPosition(), dir);
+        return minIntersection(ray.getIntersections(this));
     }
 
     private Intersection minIntersection(LinkedList<Intersection> intersections) {
@@ -85,9 +89,9 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        Sphere s1 = new Sphere(new Vector3(0,0,3), 1.0, new Rgb(163,22,33));
+        Sphere s1 = new Sphere(new Vector3(1,0,3), 1.0, new Rgb(163,22,33));
         Sphere s2 = new Sphere(new Vector3(-0.5,0.75,1.75), 0.6, new Rgb(102,207,192));
-        Sphere s3 = new Sphere(new Vector3(0,0,2), 0.3, new Rgb(78,128,152));
+        Sphere s3 = new Sphere(new Vector3(-0.25,0,1.75), 0.3, new Rgb(78,128,152));
         Sphere[] spheres = {s1, s2, s3};
         Scene sc = new Scene(spheres);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
