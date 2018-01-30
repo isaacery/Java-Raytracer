@@ -1,8 +1,8 @@
 public class Intersection {
     private double t;
-    private Sphere obj;
+    private Shape obj;
 
-    public Intersection(double t, Sphere obj) {
+    public Intersection(double t, Shape obj) {
         this.t = t;
         this.obj = obj;
     }
@@ -11,7 +11,7 @@ public class Intersection {
         return t;
     }
 
-    public Sphere getObject() {
+    public Shape getObject() {
         return obj;
     }
 }

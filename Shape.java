@@ -1,8 +1,8 @@
 public abstract class Shape extends Object {
-    private Rgb colour;
+    protected Rgb colour;
 
     public Shape(Vector3 pos, Rgb c) {
-        super(pos)
+        super(pos);
         colour = c;
     }
 
@@ -11,4 +11,7 @@ public abstract class Shape extends Object {
         Returns null if no intersection occurs.             */
     public abstract Intersection getIntersection(Ray ray);
 
+    public Rgb getColour() {
+        return colour;
+    }
 }

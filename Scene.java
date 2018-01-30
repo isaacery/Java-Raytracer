@@ -3,18 +3,18 @@ import java.io.*;
 //TODO: Lowering a lightsource raises the light in the scene??? FIXED (I think)
 public class Scene {
     private Camera camera;
-    private Sphere[] shapes;
+    private Shape[] shapes;
     private Rgb backgroundColour;
     private LightSource light; //TODO Multiple
 
-    public Scene(Sphere[] shapes) {
+    public Scene(Shape[] shapes) {
         this.camera = new Camera();
         this.shapes = shapes;
-        this.light = new LightSource(new Vector3(-3,1,-2));
+        this.light = new LightSource(new Vector3(-3,1,-2), 10);
         backgroundColour = Rgb.BLACK;
     }
 
-    public Sphere[] getShapes() {
+    public Shape[] getShapes() {
         return shapes;
     }
 
@@ -40,7 +40,7 @@ public class Scene {
         if (closest == null) {
             return backgroundColour;
         }
-        Sphere obj = closest.getObject();
+        Shape obj = closest.getObject();
         Vector3 intersectPoint =
             Vector3.add(camera.getPosition(), Vector3.scale(dir,closest.getT()));
         Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
@@ -56,7 +56,7 @@ public class Scene {
             if (i2 != null) {
                 double t = i2.getT();
                 if (t >= 0.000000001) { //TODO built-in epsilon?
-                    brightness *= Math.min(1,10*t/light.getBrightness());
+                    brightness *= Math.min(1,10*t/light.getLuminance());
                 }
             }
         }
@@ -92,8 +92,8 @@ public class Scene {
         Sphere s1 = new Sphere(new Vector3(1,0,3), 1.0, new Rgb(163,22,33));
         Sphere s2 = new Sphere(new Vector3(-0.5,0.75,1.75), 0.6, new Rgb(102,207,192));
         Sphere s3 = new Sphere(new Vector3(-0.25,0,1.75), 0.3, new Rgb(78,128,152));
-        Sphere[] spheres = {s1, s2, s3};
-        Scene sc = new Scene(spheres);
+        Shape[] shapes_ = {s1, s2, s3};
+        Scene sc = new Scene(shapes_);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
         i.writeToFile("test3");
     }

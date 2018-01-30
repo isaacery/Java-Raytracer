@@ -2,10 +2,10 @@ public class Camera extends Object {
     private Vector3 direction;
 
     public Camera() {
-        super(Vector3.ZERO, false);
+        super(Vector3.ZERO);
         direction = Vector3.FORWARD; //TODO: Implement direction properly
     }
-    
+
     /*
     public Intersection closestIntersection(Vector3 pos) {
         Vector3 dir = Vector3.fromTo(this.position, pos);

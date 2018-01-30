@@ -1,7 +1,8 @@
 public class LightSource extends Object {
-    private double brightness = 10;
-    public LightSource(Vector3 pos) {
-        super(pos, false);
+    private double luminance;
+    public LightSource(Vector3 pos, double luminance) {
+        super(pos);
+        this.luminance = luminance;
     }
 
     /*  Returns brightness value between 0 and 1
@@ -10,13 +11,13 @@ public class LightSource extends Object {
     public double brightness(Vector3 pos, Vector3 normal) {
         Vector3 between = Vector3.fromTo(pos, this.position); //TODO Is this the correct direction?
         double m = Vector3.magnitude(between);
-        double b = brightness * Math.max(Vector3.dot(between, normal), 0) / Math.pow(m,2);
+        double b = luminance * Math.max(Vector3.dot(between, normal), 0) / Math.pow(m,2);
         //TODO: How can I avoid using tanh?
         return Math.tanh(b);
     }
 
-    public double getBrightness(){
-        return brightness;
+    public double getLuminance(){
+        return luminance;
     }
     /*
     public double shadow(Intersection[] i) {

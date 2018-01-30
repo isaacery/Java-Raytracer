@@ -1,13 +1,10 @@
-public class Sphere extends Shape{
+public class Sphere extends Shape {
     private double radius;
     private Rgb colour;
+    
     public Sphere(Vector3 pos, double r, Rgb c) {
         super(pos, c);
         radius = r;
-    }
-
-    public Rgb getColour() {
-        return colour;
     }
 
     public Intersection getIntersection(Ray ray) {

@@ -33,6 +33,11 @@ public class Vector3 {
         this.z = z;
     }
 
+    //TODO: Should this be static?
+    public Vector3 normalize() {
+        return scale(this, 1/magnitude(this));
+    }
+
     public static Vector3 ZERO = new Vector3(0,0,0);
     // FORWARD is defined as a direction vector paralel to the z axis
     public static Vector3 FORWARD = new Vector3(1,0,0);
@@ -63,11 +68,6 @@ public class Vector3 {
     // Multiplies each component by some scalar k
     public static Vector3 scale(Vector3 a, double k) {
         return new Vector3(a.getX()*k, a.getY()*k, a.getZ()*k);
-    }
-
-    //TODO: Should this be static?
-    public static Vector3 normalize(Vector3 a) {
-        return scale(a, 1/magnitude(a));
     }
 
 }

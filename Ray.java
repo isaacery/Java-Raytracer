@@ -10,7 +10,7 @@ public class Ray {
         ray and the spheres in provided scene   */
     public LinkedList<Intersection> getIntersections(Scene scene) {
         LinkedList<Intersection> intersections = new LinkedList<>();
-        for (Sphere s: scene.getShapes()) {
+        for (Shape s: scene.getShapes()) {
             if (s.getIntersection(this) != null) {
                 intersections.add(s.getIntersection(this));
             }
