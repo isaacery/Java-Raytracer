@@ -1,7 +1,7 @@
 public class Sphere extends Shape {
     private double radius;
     private Rgb colour;
-    
+
     public Sphere(Vector3 pos, double r, Rgb c) {
         super(pos, c);
         radius = r;
@@ -14,7 +14,7 @@ public class Sphere extends Shape {
         Vector3 s = position;
         Vector3 s_to_o = Vector3.fromTo(s, o);
         double a = Vector3.dot(d, d);
-        double b = Vector3.dot(Vector3.scale(d, 2), s_to_o);
+        double b = Vector3.dot(d.scale(2), s_to_o);
         double c = Vector3.dot(s_to_o, s_to_o) - Math.pow(radius,2);
         double t1 = ((-1 * b) + Math.sqrt(Math.pow(b,2) - 4*a*c)) / (2 * a);
         double t2 = ((-1 * b) - Math.sqrt(Math.pow(b,2) - 4*a*c)) / (2 * a);

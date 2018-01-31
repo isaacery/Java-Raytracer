@@ -8,6 +8,7 @@ public class LightSource extends Object {
     /*  Returns brightness value between 0 and 1
         between this light source and a point 'pos'
         on an object with surface normal 'normal'   */
+    //TODO Currently works only for spheres (I think)?
     public double brightness(Vector3 pos, Vector3 normal) {
         Vector3 between = Vector3.fromTo(pos, this.position); //TODO Is this the correct direction?
         double m = Vector3.magnitude(between);

@@ -7,7 +7,7 @@ public class Ray {
         this.direction = dir;
     }
     /*  Calculates intersections between this
-        ray and the spheres in provided scene   */
+        ray and the shapes in provided scene   */
     public LinkedList<Intersection> getIntersections(Scene scene) {
         LinkedList<Intersection> intersections = new LinkedList<>();
         for (Shape s: scene.getShapes()) {

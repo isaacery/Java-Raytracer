@@ -35,7 +35,7 @@ public class Vector3 {
 
     //TODO: Should this be static?
     public Vector3 normalize() {
-        return scale(this, 1/magnitude(this));
+        return this.scale(1/magnitude(this));
     }
 
     public static Vector3 ZERO = new Vector3(0,0,0);
@@ -56,7 +56,7 @@ public class Vector3 {
 
     // Returns vector from a to b
     public static Vector3 fromTo(Vector3 a, Vector3 b) {
-        return add(b, scale(a,-1));
+        return add(b, a.scale(-1));
         //return new Vector3 (b.getX()-a.getX(), b.getY()-a.getY(), b.getZ()-a.getZ());
     }
 
@@ -66,8 +66,8 @@ public class Vector3 {
     }
 
     // Multiplies each component by some scalar k
-    public static Vector3 scale(Vector3 a, double k) {
-        return new Vector3(a.getX()*k, a.getY()*k, a.getZ()*k);
+    public Vector3 scale(double k) {
+        return new Vector3(x*k, y*k, z*k);
     }
 
 }
