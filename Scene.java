@@ -38,47 +38,46 @@ public class Scene {
     }
 
     /* pos is the position vector of the pixel being coloured */
-    //TODO Update for multiple lights
     public Rgb colourPoint(Vector3 pos) {
         Vector3 dir = Vector3.fromTo(camera.getPosition(), pos);
         Intersection closest = closestToPixel(dir);
-        //If no object is seen by the camera through pixel at pos, show background
+        //If no shapeect is seen by the camera through pixel at pos, show background
         if (closest == null) {
             return backgroundColour;
         }
-        Shape obj = closest.getObject();
+        Shape shape = closest.getShape();
         Vector3 intersectPoint =
             Vector3.add(camera.getPosition(), dir.scale(closest.getT()));
-        Vector3 normal = Vector3.fromTo(obj.getPosition(), intersectPoint);
-        double b_light = calculateBrightness(intersectPoint, normal);
-        double b_shadow = calculateShadow(intersectPoint, normal);
-        return obj.getColour().scaleBrightness(b_light * b_shadow);
+        Vector3 normal = Vector3.fromTo(shape.getPosition(), intersectPoint);
+        double brightness = calculateShading(intersectPoint, normal);
+        return shape.getColour().scaleBrightness(brightness);
     }
 
-    private double calculateShadow(Vector3 intersectPoint, Vector3 normal) {
-        //TODO unsure if I need normal
-        double brightness = 1;
-        //Iterate over each light multiplying their effect on the shadows.
+    private double calculateShading(Vector3 intersectPoint, Vector3 normal) {
+        double shadowScalar = 1;
+        double lightScalar = 0;
+        //Iterate over each light multiplying their effect on the shading.
         for (LightSource light: lights) {
-            Vector3 dir = Vector3.fromTo(intersectPoint, light.getPosition());
-            Ray shadowRay = new Ray(intersectPoint, dir);
-            /*  Disregard any extremely small t values
-                as they are a result of self intersection.  */
-            Intersection i = minIntersection(filterGreaterThan(shadowRay.getIntersections(this), 0.0000000001));
-            if (i != null) {
-                double t = i.getT();
-                brightness *= Math.min(1,5*t/light.getLuminance()); //TODO is this accurate?
+            double shadow = calculateShadow(intersectPoint, light);
+            shadowScalar *= shadow; //TODO Should I multiply or subtract here?
+            if (shadow == 1) { //Light only illuminates point if nothing is blocking it.
+                lightScalar += light.brightness(intersectPoint, normal);
             }
         }
-        return brightness;
+        return shadowScalar * Math.min(1, lightScalar);
     }
 
-    private double calculateBrightness(Vector3 intersectPoint, Vector3 normal) {
-        double brightness = 0;
-        for (LightSource light: lights) {
-            brightness += light.brightness(intersectPoint, normal); //TODO Should I add here?
+    private double calculateShadow(Vector3 intersectPoint, LightSource light) {
+        Vector3 dir = Vector3.fromTo(intersectPoint, light.getPosition());
+        Ray shadowRay = new Ray(intersectPoint, dir);
+        /*  Disregard any extremely small t values
+            as they are a result of self intersection.  */
+        Intersection i = minIntersection(filterGreaterThan(shadowRay.getIntersections(this), 0.0000000001));
+        if (i == null) {
+            return 1;
         }
-        return Math.min(1, brightness);
+        double t = i.getT();
+        return Math.min(1,5*t/light.getLuminance());
     }
 
     /*  Returns an intersection closest to the
@@ -113,14 +112,14 @@ public class Scene {
 
     public static void main (String[] args) throws IOException {
         Sphere s1 = new Sphere(new Vector3(1.5,0,5), 2, new Rgb(163,22,33));
-        Sphere s2 = new Sphere(new Vector3(-0.5,0.75,1.75), 0.6, new Rgb(102,207,192));
+        Sphere s2 = new Sphere(new Vector3(-1.0,0.5,2.5), 0.6, new Rgb(102,207,192));
         Sphere s3 = new Sphere(new Vector3(0.1,0.3,2.2), 0.3, new Rgb(78,128,152));
         Shape[] shapes_ = {s1, s2, s3};
-        LightSource l1 = new LightSource(new Vector3(-3,1,-2), 5);
+        LightSource l1 = new LightSource(new Vector3(-3,1,-2), 10);
         LightSource l2 = new LightSource(new Vector3(-0.5,1,-1), 5);
         LightSource[] lights_ = {l1,l2};
         Scene sc = new Scene(shapes_, lights_);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
-        i.writeToFile("test3");
+        i.writeToFile("test");
     }
 }

@@ -11,7 +11,7 @@ public class Intersection {
         return t;
     }
 
-    public Shape getObject() {
+    public Shape getShape() {
         return obj;
     }
 }

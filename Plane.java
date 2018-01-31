@@ -18,6 +18,8 @@ public class Plane extends Shape{
         double t = Vector3.dot(Vector3.fromTo(o, position), normal) / k;
         return new Intersection(t, this);
     }
+
+    public Vector3 getNormal() {
+        return normal;
+    }
 }
-//l0 origin of ray
-//l ray direciton
