@@ -6,12 +6,14 @@ public class Scene {
     private Shape[] shapes;
     private Rgb backgroundColour;
     private LightSource[] lights;
+    private double ambientLight; // between 0 and 1
 
     public Scene(Shape[] shapes, LightSource[] lights) {
         this.camera = new Camera();
         this.shapes = shapes;
         this.lights = lights;
-        backgroundColour = Rgb.BLACK;
+        this.ambientLight = 0.25;
+        this.backgroundColour = Rgb.BLACK;
     }
 
     public Shape[] getShapes() {
@@ -48,14 +50,16 @@ public class Scene {
         Shape shape = closest.getShape();
         Vector3 intersectPoint =
             Vector3.add(camera.getPosition(), dir.scale(closest.getT()));
-        Vector3 normal = Vector3.fromTo(shape.getPosition(), intersectPoint);
+        // Assumes sphere
+        //Vector3 normal = Vector3.fromTo(shape.getPosition(), intersectPoint);
+        Vector3 normal = shape.getNormal(intersectPoint);
         double brightness = calculateShading(intersectPoint, normal);
         return shape.getColour().scaleBrightness(brightness);
     }
 
     private double calculateShading(Vector3 intersectPoint, Vector3 normal) {
         double shadowScalar = 1;
-        double lightScalar = 0;
+        double lightScalar = ambientLight;
         //Iterate over each light multiplying their effect on the shading.
         for (LightSource light: lights) {
             double shadow = calculateShadow(intersectPoint, light);
@@ -65,6 +69,7 @@ public class Scene {
             }
         }
         return shadowScalar * Math.min(1, lightScalar);
+        //return Math.min(1, shadowScalar) * Math.min(1, lightScalar);
     }
 
     private double calculateShadow(Vector3 intersectPoint, LightSource light) {
@@ -77,7 +82,8 @@ public class Scene {
             return 1;
         }
         double t = i.getT();
-        return Math.min(1,5*t/light.getLuminance());
+        //TODO Something about taking min at this stage is cutting off shadows strangely.
+        return Math.min(1, 5*t/light.getLuminance());
     }
 
     /*  Returns an intersection closest to the
@@ -112,12 +118,13 @@ public class Scene {
 
     public static void main (String[] args) throws IOException {
         Sphere s1 = new Sphere(new Vector3(1.5,0,5), 2, new Rgb(163,22,33));
-        Sphere s2 = new Sphere(new Vector3(-1.0,0.5,2.5), 0.6, new Rgb(102,207,192));
-        Sphere s3 = new Sphere(new Vector3(0.1,0.3,2.2), 0.3, new Rgb(78,128,152));
-        Shape[] shapes_ = {s1, s2, s3};
-        LightSource l1 = new LightSource(new Vector3(-3,1,-2), 10);
-        LightSource l2 = new LightSource(new Vector3(-0.5,1,-1), 5);
-        LightSource[] lights_ = {l1,l2};
+        Sphere s2 = new Sphere(new Vector3(-1.0,-1.0,3), 1, new Rgb(102,207,192));
+        Sphere s3 = new Sphere(new Vector3(0.2,-1.75,2.7), 0.3, new Rgb(78,128,152));
+        Plane p1 = new Plane(new Vector3(0,-2,0), Vector3.UP, new Rgb(0.3,0.3,0.3));
+        Shape[] shapes_ = {s1, s2, s3, p1};
+        LightSource l1 = new LightSource(new Vector3(-3,1,-2), 3);
+        LightSource l2 = new LightSource(new Vector3(-5,0,-1), 2);
+        LightSource[] lights_ = {l1, l2};
         Scene sc = new Scene(shapes_, lights_);
         Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
         i.writeToFile("test");

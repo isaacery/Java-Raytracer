@@ -22,4 +22,9 @@ public class Plane extends Shape{
     public Vector3 getNormal() {
         return normal;
     }
+
+    public Vector3 getNormal(Vector3 pos) { //TODO THIS IS BAD
+        return normal;
+    }
+
 }

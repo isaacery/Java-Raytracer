@@ -42,6 +42,8 @@ public class Vector3 {
     // FORWARD is defined as a direction vector paralel to the z axis
     public static Vector3 FORWARD = new Vector3(1,0,0);
 
+    public static Vector3 UP = new Vector3(0,1,0);
+
     public static double dot(Vector3 a, Vector3 b) {
         return (a.getX() * b.getX() + a.getY() * b.getY() + a.getZ() * b.getZ());
     }

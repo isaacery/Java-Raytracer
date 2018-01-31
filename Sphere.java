@@ -25,4 +25,8 @@ public class Sphere extends Shape {
         }
         return new Intersection(t2, this);
     }
+    /* returns surface normal of point on sphere's edge */
+    public Vector3 getNormal(Vector3 point) {
+        return Vector3.fromTo(position, point);
+    }
 }

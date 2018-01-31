@@ -12,7 +12,8 @@ public class LightSource extends Object {
     public double brightness(Vector3 pos, Vector3 normal) {
         Vector3 between = Vector3.fromTo(pos, this.position); //TODO Is this the correct direction?
         double m = Vector3.magnitude(between);
-        double b = luminance * Math.max(Vector3.dot(between, normal), 0) / Math.pow(m,2);
+        //TODO Should I divide by magnitudes
+        double b = luminance * Math.max(Vector3.dot(between, normal), 0) / Math.pow(m,1.75);
         //TODO: How can I avoid using tanh?
         return Math.tanh(b);
     }
