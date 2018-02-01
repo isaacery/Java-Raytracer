@@ -28,10 +28,10 @@ public class Scene {
             for the image to occupy a 2x2 square centred at (0,0,1).  */
         double w_unit = 2 / ((double) width);
         double h_unit = 2 / ((double) height);
-        for (int h = 0; h < height; h++) {
-            double h_d = 1 - (h_unit * (h+1));
-            for (int w = 0; w < width; w++) {
-                double w_d = (w_unit * (w+1)) -1;
+        for (int h = 1; h <= height; h++) {
+            double h_d = 1 - (h_unit * h);
+            for (int w = 1; w <= width; w++) {
+                double w_d = (w_unit * w -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
                 raster[h][w] = colourPoint(pos);
             }
