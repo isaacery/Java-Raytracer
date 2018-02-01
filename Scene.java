@@ -28,10 +28,10 @@ public class Scene {
             for the image to occupy a 2x2 square centred at (0,0,1).  */
         double w_unit = 2 / ((double) width);
         double h_unit = 2 / ((double) height);
-        for (int h = 1; h <= height; h++) {
-            double h_d = 1 - (h_unit * h);
-            for (int w = 1; w <= width; w++) {
-                double w_d = (w_unit * w -1;
+        for (int h = 0; h < height; h++) {
+            double h_d = 1 - (h_unit * (h+1));
+            for (int w = 0; w < width; w++) {
+                double w_d = (w_unit * (w+1)) -1;
                 Vector3 pos = new Vector3(w_d, h_d, 1);
                 raster[h][w] = colourPoint(pos);
             }
@@ -117,6 +117,7 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
+        int res = 4096;
         Sphere s1 = new Sphere(new Vector3(1.5,0,5), 2, new Rgb(163,22,33));
         Sphere s2 = new Sphere(new Vector3(-1.0,-1.0,3), 1, new Rgb(102,207,192));
         Sphere s3 = new Sphere(new Vector3(0.2,-1.75,2.7), 0.3, new Rgb(78,128,152));
@@ -126,7 +127,7 @@ public class Scene {
         LightSource l2 = new LightSource(new Vector3(-5,0,-1), 2);
         LightSource[] lights_ = {l1, l2};
         Scene sc = new Scene(shapes_, lights_);
-        Image i = new Image(1024, 1024, sc.toRaster(1024, 1024));
+        Image i = new Image(res, res, sc.toRaster(res, res));
         i.writeToFile("test");
     }
 }
