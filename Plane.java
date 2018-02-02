@@ -7,12 +7,12 @@ public class Plane extends Shape{
         this.normal = normal.normalize();
     }
 
-    public Intersection getIntersection(Ray ray) {
+    public Intersection getIntersection(Ray ray) { //TODO likely broken (see error2.png)
         Vector3 o = ray.getOrigin();
         Vector3 d = ray.getDirection();
         double k = Vector3.dot(d, normal);
         //ray will always intersect unless direction and normal are orthogonal
-        if (k == 0) {
+        if (k >= 0) {
             return null;
         }
         double t = Vector3.dot(Vector3.fromTo(o, position), normal) / k;

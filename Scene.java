@@ -1,18 +1,18 @@
 import java.util.*;
 import java.io.*;
-//TODO: Lowering a lightsource raises the light in the scene??? FIXED (I think)
 public class Scene {
     private Camera camera;
     private Shape[] shapes;
     private Rgb backgroundColour;
     private LightSource[] lights;
     private double ambientLight; // between 0 and 1
+    private static final double EPS = 0.00000000001;
 
     public Scene(Shape[] shapes, LightSource[] lights) {
         this.camera = new Camera();
         this.shapes = shapes;
         this.lights = lights;
-        this.ambientLight = 0.25;
+        this.ambientLight = 0.2;
         this.backgroundColour = Rgb.BLACK;
     }
 
@@ -21,6 +21,7 @@ public class Scene {
     }
 
     //Currently assumes standard camera direction.
+    //TODO camera rotation
     public Rgb[][] toRaster(int width, int height) {
         Rgb[][] raster = new Rgb[height][width];
         /*  w_unit and h_unit are the physical spacing between pixels
@@ -59,17 +60,16 @@ public class Scene {
 
     private double calculateShading(Vector3 intersectPoint, Vector3 normal) {
         double shadowScalar = 1;
-        double lightScalar = ambientLight;
+        double lightScalar = 0;
         //Iterate over each light multiplying their effect on the shading.
         for (LightSource light: lights) {
             double shadow = calculateShadow(intersectPoint, light);
-            shadowScalar *= shadow; //TODO Should I multiply or subtract here?
+            shadowScalar = Math.min(1, shadowScalar *= shadow); //TODO Should I multiply or subtract here?
             if (shadow == 1) { //Light only illuminates point if nothing is blocking it.
                 lightScalar += light.brightness(intersectPoint, normal);
             }
         }
-        return shadowScalar * Math.min(1, lightScalar);
-        //return Math.min(1, shadowScalar) * Math.min(1, lightScalar);
+        return Math.min(1, ambientLight + shadowScalar * Math.min(1, lightScalar));
     }
 
     private double calculateShadow(Vector3 intersectPoint, LightSource light) {
@@ -77,13 +77,22 @@ public class Scene {
         Ray shadowRay = new Ray(intersectPoint, dir);
         /*  Disregard any extremely small t values
             as they are a result of self intersection.  */
-        Intersection i = minIntersection(filterGreaterThan(shadowRay.getIntersections(this), 0.0000000001));
+        Intersection i = minIntersection(filterGreaterThan(shadowRay.getIntersections(this), EPS));
         if (i == null) {
             return 1;
         }
+        /*
+        if (i.getShape() instanceof Plane) {
+            if (intersectPoint.getY() >= 1) {
+                System.out.println("Vector: " + intersectPoint.toString());
+                System.out.println("T: " + i.getT());
+            }
+        }
+        */
         double t = i.getT();
-        //TODO Something about taking min at this stage is cutting off shadows strangely.
-        return Math.min(1, 5*t/light.getLuminance());
+        //TODO Plane is causing strange shading (see error2.png)
+        return 1/light.getLuminance();
+        //return Math.min(1, 5*t/light.getLuminance());
     }
 
     /*  Returns an intersection closest to the
@@ -117,15 +126,23 @@ public class Scene {
     }
 
     public static void main (String[] args) throws IOException {
-        int res = 4096;
+        int res = 1024;
         Sphere s1 = new Sphere(new Vector3(1.5,0,5), 2, new Rgb(163,22,33));
         Sphere s2 = new Sphere(new Vector3(-1.0,-1.0,3), 1, new Rgb(102,207,192));
         Sphere s3 = new Sphere(new Vector3(0.2,-1.75,2.7), 0.3, new Rgb(78,128,152));
-        Plane p1 = new Plane(new Vector3(0,-2,0), Vector3.UP, new Rgb(0.3,0.3,0.3));
-        Shape[] shapes_ = {s1, s2, s3, p1};
+        Plane p1 = new Plane(new Vector3(0,-3,0), new Vector3 (0,1,-0.25), new Rgb(0.3,0.3,0.3));
+        Shape[] shapes_ = {s1, p1};
         LightSource l1 = new LightSource(new Vector3(-3,1,-2), 3);
         LightSource l2 = new LightSource(new Vector3(-5,0,-1), 2);
         LightSource[] lights_ = {l1, l2};
+        /*
+        LightSource l1 = new LightSource(new Vector3(-3,1,-2), 5);
+        LightSource l2 = new LightSource(new Vector3(-5,0,-1.5), 2);
+        Plane p1 = new Plane(new Vector3(0,-1.5,0), Vector3.UP, new Rgb(0.6,0.6,0.6));
+        Sphere s1 = new Sphere(new Vector3(-0.5,-1,2), 0.5, new Rgb(163,22,33));
+        Shape[] shapes_ = {s1, p1};
+        LightSource[] lights_ = {l1,l2};
+        */
         Scene sc = new Scene(shapes_, lights_);
         Image i = new Image(res, res, sc.toRaster(res, res));
         i.writeToFile("test");
